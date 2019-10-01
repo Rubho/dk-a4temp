@@ -83,6 +83,9 @@ public class TCPClient {
     public void tryLogin(String username) {
         // TODO Step 3: implement this method
         // Hint: Reuse sendCommand() method
+        
+        String CmdToSend = "login " + username;
+        sendCommand(CmdToSend);
     }
 
     /**
