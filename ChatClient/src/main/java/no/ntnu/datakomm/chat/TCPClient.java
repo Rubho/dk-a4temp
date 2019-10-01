@@ -4,11 +4,14 @@ import java.io.*;
 import java.net.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TCPClient {
     private PrintWriter toServer;
     private BufferedReader fromServer;
     private Socket connection;
+    boolean establishedConnection = false;
 
     // Hint: if you want to store a message for the last error, store it here
     private String lastError = null;
@@ -26,7 +29,21 @@ public class TCPClient {
         // TODO Step 1: implement this method
         // Hint: Remember to process all exceptions and return false on error
         // Hint: Remember to set up all the necessary input/output stream variables
-        return false;
+        try {
+            connection = new Socket(host, port);
+            System.out.println("Successfully connected!");
+            OutputStream out = connection.getOutputStream();
+            InputStream in = connection.getInputStream();
+            establishedConnection = true;
+
+
+            //if disconnect is not in use: socket.close();
+        } catch (IOException e) {
+            System.out.println("Socket error: " + e.getMessage());
+            establishedConnection = false;
+
+        }
+        return establishedConnection;
     }
 
     /**
@@ -41,6 +58,19 @@ public class TCPClient {
     public synchronized void disconnect() {
         // TODO Step 4: implement this method
         // Hint: remember to check if connection is active
+        if (isConnectionActive()) {
+            try {
+                connection.close();
+                connection = null;
+                System.out.println("Disconnected.");
+            } catch (IOException ex) {
+                Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Failed to disconnect.");
+            }
+
+        } else {
+            System.out.println("Failed to disconnect.");
+        }
     }
 
     /**
@@ -59,7 +89,35 @@ public class TCPClient {
     private boolean sendCommand(String cmd) {
         // TODO Step 2: Implement this method
         // Hint: Remember to check if connection is active
-        return false;
+        boolean sendCommandStatus;
+        if(isConnectionActive()==true){
+            if(cmd!=null){
+                String[] cmdCommand=cmd.split(" ");
+                if(cmdCommand.equals("login") ||
+                        cmdCommand.equals("msg")||
+                        cmdCommand.equals("privMsg")||
+                        cmdCommand.equals("help")){
+                    toServer.println(cmd);
+                    sendCommandStatus = true;
+                }
+                else{
+                    lastError= "cmd does not contain the right cmd Command.";
+                    onCmdError(lastError);
+                    sendCommandStatus = false;
+                }
+            }
+            else{
+                lastError= "cmd is null. cmd does not contain anything.";
+                onCmdError(lastError);
+                sendCommandStatus = false;
+            }
+
+        }else{
+            lastError= "Connection is not active.";
+            onCmdError(lastError);
+            sendCommandStatus = false;
+        }
+        return sendCommandStatus;
     }
 
     /**
@@ -72,7 +130,8 @@ public class TCPClient {
         // TODO Step 2: implement this method
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
-        return false;
+        sendCommand("msg " + message);
+        return true;
     }
 
     /**
