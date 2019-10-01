@@ -9,6 +9,7 @@ public class TCPClient {
     private PrintWriter toServer;
     private BufferedReader fromServer;
     private Socket connection;
+    boolean establishedConnection = false;
 
     // Hint: if you want to store a message for the last error, store it here
     private String lastError = null;
@@ -26,7 +27,20 @@ public class TCPClient {
         // TODO Step 1: implement this method
         // Hint: Remember to process all exceptions and return false on error
         // Hint: Remember to set up all the necessary input/output stream variables
-        return false;
+
+        try {
+            // Establish connection to the remote server
+            connection = new Socket(host, port);
+            System.out.println("Successfully connected!");
+            OutputStream out = connection.getOutputStream();
+            InputStream in = connection.getInputStream();
+            establishedConnection = true;
+        }
+        catch (IOException e) {
+            System.out.println("Socket error: " + e.getMessage());
+            establishedConnection = false;
+        }
+        return establishedConnection;
     }
 
     /**
