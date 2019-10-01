@@ -29,32 +29,20 @@ public class TCPClient {
         // TODO Step 1: implement this method
         // Hint: Remember to process all exceptions and return false on error
         // Hint: Remember to set up all the necessary input/output stream variables
-<<<<<<< HEAD
-        try {
-=======
 
         try {
             // Establish connection to the remote server
->>>>>>> develop
             connection = new Socket(host, port);
             System.out.println("Successfully connected!");
             OutputStream out = connection.getOutputStream();
             InputStream in = connection.getInputStream();
             establishedConnection = true;
-<<<<<<< HEAD
-
 
             //if disconnect is not in use: socket.close();
         } catch (IOException e) {
             System.out.println("Socket error: " + e.getMessage());
             establishedConnection = false;
 
-=======
-        }
-        catch (IOException e) {
-            System.out.println("Socket error: " + e.getMessage());
-            establishedConnection = false;
->>>>>>> develop
         }
         return establishedConnection;
     }
