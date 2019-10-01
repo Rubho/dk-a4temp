@@ -137,8 +137,18 @@ public class TCPClient {
         // TODO Step 2: implement this method
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
-        sendCommand("msg " + message);
-        return true;
+        boolean result = false;
+
+        if(message != null) {
+            result = true;
+            sendCommand("msg " + message);
+        } else {
+            result = false;
+            System.out.println("Failed to send a public message.");
+            lastError= "Failed to send a public message.";
+            onCmdError(lastError + " cmd success.");
+        }
+        return result;
     }
 
     /**
