@@ -197,8 +197,18 @@ public class TCPClient {
         // TODO Step 3: Implement this method
         // TODO Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
+        String response = "";
+        try {
+            response = fromServer.readLine();
+            if (fromServer == null) {
+                disconnect();
+            }
+        }
+        catch (IOException e) {
+            disconnect();
+        }
 
-        return null;
+        return response;
     }
 
     /**
@@ -297,6 +307,9 @@ public class TCPClient {
     private void onDisconnect() {
         // TODO Step 4: Implement this method
         // Hint: all the onXXX() methods will be similar to onLoginResult()
+        for (ChatListener l : listeners) {
+            l.onDisconnect();
+        }
     }
 
     /**
