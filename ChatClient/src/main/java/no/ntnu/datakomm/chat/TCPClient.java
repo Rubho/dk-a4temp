@@ -41,6 +41,7 @@ public class TCPClient {
             //if disconnect is not in use: socket.close();
         } catch (IOException e) {
             System.out.println("Socket error: " + e.getMessage());
+            lastError="Socket error: " + e.getMessage();
             establishedConnection = false;
 
         }
@@ -67,10 +68,12 @@ public class TCPClient {
             } catch (IOException ex) {
                 Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("Failed to disconnect.");
+                lastError="Failed to disconnect.";
             }
 
         } else {
             System.out.println("Failed to disconnect.");
+            lastError="Failed to disconnect.";
         }
     }
 
@@ -95,26 +98,29 @@ public class TCPClient {
             if(cmd!=null){
                 String[] cmdCommand=cmd.split(" ");
                 if(cmdCommand.equals("login") ||
-                        cmdCommand.equals("msg")||
-                        cmdCommand.equals("privMsg")||
-                        cmdCommand.equals("help")){
+                    cmdCommand.equals("msg")||
+                    cmdCommand.equals("privMsg")||
+                    cmdCommand.equals("help")){
                     toServer.println(cmd);
                     sendCommandStatus = true;
                 }
                 else{
                     lastError= "cmd does not contain the right cmd Command.";
+                    System.out.println("cmd does not contain the right cmd Command.");
                     onCmdError(lastError);
                     sendCommandStatus = false;
                 }
             }
             else{
                 lastError= "cmd is null. cmd does not contain anything.";
+                System.out.println("cmd is null. cmd does not contain anything.");
                 onCmdError(lastError);
                 sendCommandStatus = false;
             }
 
         }else{
             lastError= "Connection is not active.";
+            System.out.println("Connection is not active.");
             onCmdError(lastError);
             sendCommandStatus = false;
         }
