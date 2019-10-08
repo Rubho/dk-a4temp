@@ -239,6 +239,22 @@ public class TCPClient {
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
 
+            switch(waitServerResponse().toLowerCase()){
+                case "loginok":
+                    lastError = "Login successful";
+                    onLoginResult(true, lastError);
+                    break;
+                case "loginerr":
+                    lastError = "Not valid login";
+                    onLoginResult(false, lastError);
+                case "msg":
+                    break;
+                case "privmsg":
+                    break;
+                case "help":
+                    break;
+            }
+
             // TODO Step 5: update this method, handle user-list response from the server
             // Hint: In Step 5 reuse onUserList() method
 
@@ -285,7 +301,7 @@ public class TCPClient {
      * @param success When true, login successful. When false, it failed
      * @param errMsg  Error message if any
      */
-    private void onLoginResult(boolean success, String errMsg) {
+    private void  onLoginResult(boolean success, String errMsg) {
         for (ChatListener l : listeners) {
             l.onLoginResult(success, errMsg);
         }
