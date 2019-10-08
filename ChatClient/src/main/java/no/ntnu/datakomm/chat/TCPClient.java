@@ -169,6 +169,7 @@ public class TCPClient {
         boolean result= false;
         if (recipient!= null){
             sendCommand("privmsg " + recipient + " " + message);
+            result = true;
 
         }else{
             lastError= "Could not send Private Message, because recipient does not exist.";
