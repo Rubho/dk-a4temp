@@ -15,6 +15,7 @@ public class TCPClient {
     private Socket connection;
     boolean establishedConnection = false;
     private String[] listOfUsers = null;
+    private String[] supported = null;
 
     // Hint: if you want to store a message for the last error, store it here
     private String lastError = null;
@@ -190,6 +191,7 @@ public class TCPClient {
     public void askSupportedCommands() {
         // TODO Step 8: Implement this method
         // Hint: Reuse sendCommand() method
+        sendCommand("help");
     }
 
 
@@ -252,7 +254,7 @@ public class TCPClient {
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
             String response = waitServerResponse();
-            String[] parts = response.split(" ");
+            String[] parts = response.split(" ", 2);
             String firstPart = parts[0];
 
             switch (firstPart) {
@@ -273,7 +275,12 @@ public class TCPClient {
                     break;
                 case "privmsg":
                     break;
-                case "help":
+                case "supported":/*
+                    supported[0]="help";
+                    supported[1]="msg";
+                    supported[2]="privmsg";
+                    supported[3]="login";
+*/
                     break;
             }
 
@@ -390,5 +397,8 @@ public class TCPClient {
      */
     private void onSupported(String[] commands) {
         // TODO Step 8: Implement this method
+        for (ChatListener l : listeners) {
+            l.onSupportedCommands(commands);
+        }
     }
 }
