@@ -2,6 +2,8 @@ package no.ntnu.datakomm.chat;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
@@ -12,6 +14,7 @@ public class TCPClient {
     private BufferedReader fromServer;
     private Socket connection;
     boolean establishedConnection = false;
+    private String[] listOfUsers = null;
 
     // Hint: if you want to store a message for the last error, store it here
     private String lastError = null;
@@ -38,12 +41,12 @@ public class TCPClient {
             InputStream in = connection.getInputStream();
             establishedConnection = true;
             toServer = new PrintWriter(out, true);
-            fromServer  = new BufferedReader(new InputStreamReader(in));
+            fromServer = new BufferedReader(new InputStreamReader(in));
 
             //if disconnect is not in use: socket.close();
         } catch (IOException e) {
             System.out.println("Socket error: " + e.getMessage());
-            lastError="Socket error: " + e.getMessage();
+            lastError = "Socket error: " + e.getMessage();
             establishedConnection = false;
 
         }
@@ -70,12 +73,12 @@ public class TCPClient {
             } catch (IOException ex) {
                 Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("Failed to disconnect.");
-                lastError="Failed to disconnect.";
+                lastError = "Failed to disconnect.";
             }
 
         } else {
             System.out.println("Failed to disconnect.");
-            lastError="Failed to disconnect.";
+            lastError = "Failed to disconnect.";
         }
     }
 
@@ -96,11 +99,11 @@ public class TCPClient {
         // TODO Step 2: Implement this method
         // Hint: Remember to check if connection is active
         boolean sendCommandStatus;
-        if(isConnectionActive()==true){
+        if (isConnectionActive() == true) {
             toServer.println(cmd);
             sendCommandStatus = true;
-        }else{
-            lastError= "Connection is not active.";
+        } else {
+            lastError = "Connection is not active.";
             System.out.println("Connection is not active.");
             onCmdError(lastError);
             sendCommandStatus = false;
@@ -120,13 +123,13 @@ public class TCPClient {
         // Hint: update lastError if you want to store the reason for the error.
         boolean result = false;
 
-        if(!message.trim().equals("")) {
+        if (!message.trim().equals("")) {
             result = true;
             sendCommand("msg " + message);
         } else {
             result = false;
             System.out.println("Failed to send a public message.");
-            lastError= "Failed to send a public message.";
+            lastError = "Failed to send a public message.";
             onCmdError(lastError + " cmd success.");
         }
         return result;
@@ -140,7 +143,7 @@ public class TCPClient {
     public void tryLogin(String username) {
         // TODO Step 3: implement this method
         // Hint: Reuse sendCommand() method
-        
+
         String CmdToSend = "login " + username;
         sendCommand(CmdToSend);
     }
@@ -153,6 +156,7 @@ public class TCPClient {
         // TODO Step 5: implement this method
         // Hint: Use Wireshark and the provided chat client reference app to find out what commands the
         // client and server exchange for user listing.
+        sendCommand("users");
     }
 
     /**
@@ -166,15 +170,15 @@ public class TCPClient {
         // TODO Step 6: Implement this method
         // Hint: Reuse sendCommand() method
         // Hint: update lastError if you want to store the reason for the error.
-        boolean result= false;
-        if (recipient!= null){
+        boolean result = false;
+        if (recipient != null) {
             sendCommand("privmsg " + recipient + " " + message);
             result = true;
 
-        }else{
-            lastError= "Could not send Private Message, because recipient does not exist.";
+        } else {
+            lastError = "Could not send Private Message, because recipient does not exist.";
             System.out.println(lastError);
-            result=false;
+            result = false;
         }
         return result;
     }
@@ -198,15 +202,14 @@ public class TCPClient {
         // TODO Step 3: Implement this method
         // TODO Step 4: If you get I/O Exception or null from the stream, it means that something has gone wrong
         // with the stream and hence the socket. Probably a good idea to close the socket in that case.
-        String response = "";
-        try {
-            response = fromServer.readLine();
-            if (fromServer == null) {
+        String response = null;
+        if (isConnectionActive()) {
+            try {
+                response = fromServer.readLine();
+
+            } catch (IOException e) {
                 disconnect();
             }
-        }
-        catch (IOException e) {
-            disconnect();
         }
 
         return response;
@@ -248,8 +251,11 @@ public class TCPClient {
             // and act on it.
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
+            String response = waitServerResponse();
+            String[] parts = response.split(" ");
+            String firstPart = parts[0];
 
-            switch(waitServerResponse().toLowerCase()){
+            switch (firstPart) {
                 case "loginok":
                     lastError = "Login successful";
                     onLoginResult(true, lastError);
@@ -257,6 +263,12 @@ public class TCPClient {
                 case "loginerr":
                     lastError = "Not valid login";
                     onLoginResult(false, lastError);
+                    break;
+                case "users":
+                    String cutString = response.replaceFirst("users ", "");
+                    listOfUsers = cutString.split(" ");
+                    onUsersList(listOfUsers);
+                    break;
                 case "msg":
                     break;
                 case "privmsg":
@@ -311,7 +323,7 @@ public class TCPClient {
      * @param success When true, login successful. When false, it failed
      * @param errMsg  Error message if any
      */
-    private void  onLoginResult(boolean success, String errMsg) {
+    private void onLoginResult(boolean success, String errMsg) {
         for (ChatListener l : listeners) {
             l.onLoginResult(success, errMsg);
         }
@@ -336,6 +348,9 @@ public class TCPClient {
      */
     private void onUsersList(String[] users) {
         // TODO Step 5: Implement this method
+        for (ChatListener l : listeners) {
+            l.onUserList(users);
+        }
     }
 
     /**
