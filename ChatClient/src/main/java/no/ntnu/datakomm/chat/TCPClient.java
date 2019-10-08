@@ -37,6 +37,8 @@ public class TCPClient {
             OutputStream out = connection.getOutputStream();
             InputStream in = connection.getInputStream();
             establishedConnection = true;
+            /*toServer = new PrintWriter(out);
+            fromServer = new BufferedReader();*/
 
             //if disconnect is not in use: socket.close();
         } catch (IOException e) {
@@ -95,29 +97,8 @@ public class TCPClient {
         // Hint: Remember to check if connection is active
         boolean sendCommandStatus;
         if(isConnectionActive()==true){
-            if(cmd!=null){
-                String[] cmdCommand=cmd.split(" ");
-                if(cmdCommand.equals("login") ||
-                    cmdCommand.equals("msg")||
-                    cmdCommand.equals("privMsg")||
-                    cmdCommand.equals("help")){
-                    toServer.println(cmd);
-                    sendCommandStatus = true;
-                }
-                else{
-                    lastError= "cmd does not contain the right cmd Command.";
-                    System.out.println("cmd does not contain the right cmd Command.");
-                    onCmdError(lastError);
-                    sendCommandStatus = false;
-                }
-            }
-            else{
-                lastError= "cmd is null. cmd does not contain anything.";
-                System.out.println("cmd is null. cmd does not contain anything.");
-                onCmdError(lastError);
-                sendCommandStatus = false;
-            }
-
+            toServer.println(cmd);
+            sendCommandStatus = true;
         }else{
             lastError= "Connection is not active.";
             System.out.println("Connection is not active.");
@@ -139,7 +120,7 @@ public class TCPClient {
         // Hint: update lastError if you want to store the reason for the error.
         boolean result = false;
 
-        if(message != null) {
+        if(!message.trim().equals("")) {
             result = true;
             sendCommand("msg " + message);
         } else {
