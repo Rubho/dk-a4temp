@@ -37,8 +37,8 @@ public class TCPClient {
             OutputStream out = connection.getOutputStream();
             InputStream in = connection.getInputStream();
             establishedConnection = true;
-            /*toServer = new PrintWriter(out);
-            fromServer = new BufferedReader();*/
+            toServer = new PrintWriter(out, true);
+            fromServer  = new BufferedReader(new InputStreamReader(in));
 
             //if disconnect is not in use: socket.close();
         } catch (IOException e) {
