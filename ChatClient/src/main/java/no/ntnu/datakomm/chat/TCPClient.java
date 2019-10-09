@@ -272,8 +272,8 @@ public class TCPClient {
                     break;
                 case "msg":
                     cutString = response.replaceFirst("msg", "");
-                    String[] sender = cutString.split(" ");
-                    onMsgReceived(false, );
+                    String[] senderAndMessage = cutString.split(" ");
+                    onMsgReceived(false, senderAndMessage[0], senderAndMessage[1]);
                     // NOT DONE YET
                     break;
                 case "privmsg":
@@ -283,7 +283,7 @@ public class TCPClient {
                     supported[1]="msg";
                     supported[2]="privmsg";
                     supported[3]="login";
-*/
+                    */
                     break;
             }
 
@@ -375,7 +375,7 @@ public class TCPClient {
     private void onMsgReceived(boolean priv, String sender, String text) {
         // TODO Step 7: Implement this method
             for (ChatListener l : listeners) {
-                l.onMessageReceived(priv, sender, text);
+                l.onMessageReceived(new TextMessage(sender, priv, text));
             }
 
 
