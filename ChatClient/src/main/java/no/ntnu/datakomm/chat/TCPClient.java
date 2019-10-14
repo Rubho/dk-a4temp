@@ -81,7 +81,7 @@ public class TCPClient {
         else {
             lastError = "Failed to disconnect, because you are not connected.";
             System.out.println("Failed to disconnect, because you are not connected.");
-            
+
         }
     }
 
@@ -292,7 +292,7 @@ public class TCPClient {
                     onCmdError(lastError);
                     break;
                 case "supported":
-                    String stringSupported= "users msg privmsg supported";
+                    String stringSupported= "<msg> and <privmsg>.";
                     supported = stringSupported.split( " ");
                     onSupported(supported);
                     break;
