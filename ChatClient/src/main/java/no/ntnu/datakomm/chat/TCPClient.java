@@ -277,7 +277,9 @@ public class TCPClient {
                     break;
                 case "privmsg":
                     break;
-                case "supported":/*
+                case "supported":
+                    onSupported(supported);
+                    /*
                     supported[0]="help";
                     supported[1]="msg";
                     supported[2]="privmsg";
