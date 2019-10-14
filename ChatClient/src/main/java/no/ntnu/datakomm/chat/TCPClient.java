@@ -77,11 +77,10 @@ public class TCPClient {
                 System.out.println("Failed to disconnect.");
                 lastError = "Failed to disconnect.";
             }
-        }
-        else {
+        } else {
             lastError = "Failed to disconnect, because you are not connected.";
             System.out.println("Failed to disconnect, because you are not connected.");
-            
+
         }
     }
 
@@ -256,46 +255,48 @@ public class TCPClient {
             // Hint: In Step 3 you need to handle only login-related responses.
             // Hint: In Step 3 reuse onLoginResult() method
             String response = waitServerResponse();
-            String[] parts = response.split(" ", 2);
-            String firstPart = parts[0];
-
-            switch (firstPart) {
-                case "loginok":
-                    onLoginResult(true, lastError);
-                    break;
-                case "loginerr":
-                    lastError = "Not valid login";
-                    onLoginResult(false, lastError);
-                    break;
-                case "users":
-                    String cutString = response.replaceFirst("users ", "");
-                    listOfUsers = cutString.split(" ");
-                    onUsersList(listOfUsers);
-                    break;
-                case "msg":
-                    String cutStringmsg = response.replaceFirst("msg", "");
-                    String[] senderAndMessagemsg = cutStringmsg.split(" ");
-                    onMsgReceived(false, senderAndMessagemsg[1], senderAndMessagemsg[2]);
-                    // NOT DONE YET
-                    break;
-                case "msgerr":
-                    lastError = "Not valid message";
-                    onMsgError(lastError);
-                    break;
-                case "privmsg":
-                    String cutStringprivmsg = response.replaceFirst("msg", "");
-                    String[] senderAndMessageprivmsg = cutStringprivmsg.split(" ");
-                    onMsgReceived(true, senderAndMessageprivmsg[1], senderAndMessageprivmsg[2]);
-                    break;
-                case "cmderr":
-                    lastError = "Not valid command";
-                    onCmdError(lastError);
-                    break;
-                case "supported":
-                    String stringSupported= "users msg privmsg supported";
-                    supported = stringSupported.split( " ");
-                    onSupported(supported);
-                    break;
+            if (isConnectionActive()) {
+                String[] parts = response.split(" ", 2);
+                String firstPart = parts[0];
+                
+                switch (firstPart) {
+                    case "loginok":
+                        onLoginResult(true, lastError);
+                        break;
+                    case "loginerr":
+                        lastError = "Not valid login";
+                        onLoginResult(false, lastError);
+                        break;
+                    case "users":
+                        String cutString = response.replaceFirst("users ", "");
+                        listOfUsers = cutString.split(" ");
+                        onUsersList(listOfUsers);
+                        break;
+                    case "msg":
+                        String cutStringmsg = response.replaceFirst("msg", "");
+                        String[] senderAndMessagemsg = cutStringmsg.split(" ");
+                        onMsgReceived(false, senderAndMessagemsg[1], senderAndMessagemsg[2]);
+                        // NOT DONE YET
+                        break;
+                    case "msgerr":
+                        lastError = "Not valid message";
+                        onMsgError(lastError);
+                        break;
+                    case "privmsg":
+                        String cutStringprivmsg = response.replaceFirst("msg", "");
+                        String[] senderAndMessageprivmsg = cutStringprivmsg.split(" ");
+                        onMsgReceived(true, senderAndMessageprivmsg[1], senderAndMessageprivmsg[2]);
+                        break;
+                    case "cmderr":
+                        lastError = "Not valid command";
+                        onCmdError(lastError);
+                        break;
+                    case "supported":
+                        String stringSupported = "users msg privmsg supported";
+                        supported = stringSupported.split(" ");
+                        onSupported(supported);
+                        break;
+                }
             }
 
             // TODO Step 5: update this method, handle user-list response from the server
@@ -305,7 +306,6 @@ public class TCPClient {
             // TODO Step 7: add support for incoming message errors (type: msgerr)
             // TODO Step 7: add support for incoming command errors (type: cmderr)
             // Hint for Step 7: call corresponding onXXX() methods which will notify all the listeners
-
 
 
             // TODO Step 8: add support for incoming supported command list (type: supported)
@@ -385,9 +385,9 @@ public class TCPClient {
      */
     private void onMsgReceived(boolean priv, String sender, String text) {
         // TODO Step 7: Implement this method
-            for (ChatListener l : listeners) {
-                l.onMessageReceived(new TextMessage(sender, priv, text));
-            }
+        for (ChatListener l : listeners) {
+            l.onMessageReceived(new TextMessage(sender, priv, text));
+        }
     }
 
     /**
