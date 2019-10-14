@@ -70,14 +70,15 @@ public class TCPClient {
             try {
                 connection.close();
                 connection = null;
+                onDisconnect();
                 System.out.println("Disconnected.");
             } catch (IOException ex) {
                 Logger.getLogger(TCPClient.class.getName()).log(Level.SEVERE, null, ex);
                 System.out.println("Failed to disconnect.");
                 lastError = "Failed to disconnect.";
             }
-
-        } else {
+        }
+        else {
             System.out.println("Failed to disconnect.");
             lastError = "Failed to disconnect.";
         }
@@ -377,8 +378,11 @@ public class TCPClient {
     private void onMsgReceived(boolean priv, String sender, String text) {
         // TODO Step 7: Implement this method
             for (ChatListener l : listeners) {
-                l.onMessageReceived(new TextMessage(sender, priv, text));
+                l.onMessageReceived(priv, sender, text);
             }
+
+
+            //aaa
 
 
     }
