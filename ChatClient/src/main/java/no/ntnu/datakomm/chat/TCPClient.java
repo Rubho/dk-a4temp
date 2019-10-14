@@ -79,8 +79,9 @@ public class TCPClient {
             }
         }
         else {
-            System.out.println("Failed to disconnect.");
-            lastError = "Failed to disconnect.";
+            lastError = "Failed to disconnect, because you are not connected.";
+            System.out.println("Failed to disconnect, because you are not connected.");
+            
         }
     }
 
