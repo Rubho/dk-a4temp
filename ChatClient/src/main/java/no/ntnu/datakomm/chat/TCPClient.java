@@ -273,9 +273,9 @@ public class TCPClient {
                     onUsersList(listOfUsers);
                     break;
                 case "msg":
-                    cutString = response.replaceFirst("msg", "");
-                    String[] senderAndMessage = cutString.split(" ");
-                    onMsgReceived(false, senderAndMessage[0], senderAndMessage[1]);
+                    String cutStringmsg = response.replaceFirst("msg", "");
+                    String[] senderAndMessagemsg = cutStringmsg.split(" ");
+                    onMsgReceived(false, senderAndMessagemsg[1], senderAndMessagemsg[2]);
                     // NOT DONE YET
                     break;
                 case "msgerr":
@@ -283,6 +283,9 @@ public class TCPClient {
                     onMsgError(lastError);
                     break;
                 case "privmsg":
+                    String cutStringprivmsg = response.replaceFirst("msg", "");
+                    String[] senderAndMessageprivmsg = cutStringprivmsg.split(" ");
+                    onMsgReceived(true, senderAndMessageprivmsg[1], senderAndMessageprivmsg[2]);
                     break;
                 case "cmderr":
                     lastError = "Not valid command";
