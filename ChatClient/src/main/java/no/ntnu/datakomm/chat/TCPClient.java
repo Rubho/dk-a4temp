@@ -77,7 +77,8 @@ public class TCPClient {
                 System.out.println("Failed to disconnect.");
                 lastError = "Failed to disconnect.";
             }
-        } else {
+        }
+        else {
             System.out.println("Failed to disconnect.");
             lastError = "Failed to disconnect.";
         }
@@ -274,6 +275,7 @@ public class TCPClient {
                     cutString = response.replaceFirst("msg", "");
                     String[] senderAndMessage = cutString.split(" ");
                     onMsgReceived(false, senderAndMessage[0], senderAndMessage[1]);
+                    // NOT DONE YET
                     break;
                 case "msgerr":
                     lastError = "Not valid message";
@@ -286,13 +288,9 @@ public class TCPClient {
                     onCmdError(lastError);
                     break;
                 case "supported":
+                    String stringSupported= "users msg privmsg supported";
+                    supported = stringSupported.split( " ");
                     onSupported(supported);
-                    /*
-                    supported[0]="help";
-                    supported[1]="msg";
-                    supported[2]="privmsg";
-                    supported[3]="login";
-                    */
                     break;
             }
 
@@ -303,6 +301,7 @@ public class TCPClient {
             // TODO Step 7: add support for incoming message errors (type: msgerr)
             // TODO Step 7: add support for incoming command errors (type: cmderr)
             // Hint for Step 7: call corresponding onXXX() methods which will notify all the listeners
+
 
 
             // TODO Step 8: add support for incoming supported command list (type: supported)
@@ -382,9 +381,9 @@ public class TCPClient {
      */
     private void onMsgReceived(boolean priv, String sender, String text) {
         // TODO Step 7: Implement this method
-        for (ChatListener l : listeners) {
-            l.onMessageReceived(new TextMessage(sender, priv, text));
-        }
+            for (ChatListener l : listeners) {
+                l.onMessageReceived(new TextMessage(sender, priv, text));
+            }
     }
 
     /**
