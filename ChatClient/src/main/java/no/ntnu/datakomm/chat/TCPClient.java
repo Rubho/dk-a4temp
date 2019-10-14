@@ -275,7 +275,15 @@ public class TCPClient {
                     String[] senderAndMessage = cutString.split(" ");
                     onMsgReceived(false, senderAndMessage[0], senderAndMessage[1]);
                     break;
+                case "msgerr":
+                    lastError = "Not valid message";
+                    onMsgError(lastError);
+                    break;
                 case "privmsg":
+                    break;
+                case "cmderr":
+                    lastError = "Not valid command";
+                    onCmdError(lastError);
                     break;
                 case "supported":
                     onSupported(supported);
@@ -386,6 +394,9 @@ public class TCPClient {
      */
     private void onMsgError(String errMsg) {
         // TODO Step 7: Implement this method
+        for (ChatListener l : listeners) {
+            l.onMessageError(errMsg);
+        }
     }
 
     /**
@@ -395,6 +406,9 @@ public class TCPClient {
      */
     private void onCmdError(String errMsg) {
         // TODO Step 7: Implement this method
+        for (ChatListener l : listeners) {
+            l.onCommandError(errMsg);
+        }
     }
 
     /**
